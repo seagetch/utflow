@@ -72,6 +72,8 @@ class TaskFlow:
             
             src_filepath  = self.generate_filepath(self.flow.last_task)
             dest_filepath = self.generate_filepath(self.label)
+            if os.path.exists(dest_filepath):
+                os.remove(dest_filepath)
             os.symlink(src_filepath, dest_filepath)
             
             
@@ -126,3 +128,4 @@ class TaskFlow:
         self.start   = start
         self.end     = end
         self.started = False
+        self.ended   = False
