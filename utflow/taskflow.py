@@ -12,12 +12,12 @@ TASKFLOW_DIR = os.environ.get("TASKFLOW_DIR") or os.path.join(os.getcwd(), ".utf
 class TaskFlow:
 
     def __init__(self, *, start=None, end=None):
-        self.start   = start
-        self.end     = end
-        self.started = False
-        self.ended   = False
-        self.tasks   = 0
-        self.context = None
+        self.start     = start
+        self.end       = end
+        self.started   = False
+        self.ended     = False
+        self.tasks     = 0
+        self.context   = None
         self.last_task = None
 
         
@@ -163,7 +163,8 @@ class TaskFlow:
         
     def reset(self, start = None, end = None):
         
-        self.start   = start
-        self.end     = end
-        self.started = False
-        self.ended   = False
+        self.start     = start
+        self.end       = end
+        self.started   = False
+        self.ended     = False
+        self.last_task = None
