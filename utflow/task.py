@@ -14,6 +14,19 @@ from logging import getLogger
 logger = getLogger(__name__)
 
 
+class ProcessLocalTask:
+    
+    def __init__(self, flow, label, when=None):
+        self.label = label
+        self.flow  = flow
+        
+    @contextlib.contextmanager
+    def start(self):
+        if not self.flow.session_context:
+            self.flow.session_context = Context()
+        yield self.flow.session_context
+    
+
 class Task:
     
     
@@ -33,6 +46,7 @@ class Task:
         
         if self.flow.last_task is None:
             self.flow.context = Context()
+            self.flow.context.__reset__(self.flow.session_context)
         else:
             filepath = self.generate_filepath(self.flow.last_task)
             if os.path.exists(filepath):
@@ -40,7 +54,9 @@ class Task:
                 try:
                     with open(filepath, "rb") as f:
                         self.flow.context = pickle.load(f)
-                except EOFError:
+                        self.flow.context.__reset__(self.flow.session_context)
+                except EOFError as e:
+                    logger.debug(str(e))
                     pass
 
 
@@ -51,7 +67,7 @@ class Task:
         filepath = self.generate_filepath(self.label)
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
         with open(filepath, "wb") as f:
-            pickle.dump(self.flow.context, f)
+            self.flow.context.__dump__(f)
 
             
     def duplicate_state(self):
@@ -83,6 +99,7 @@ class Task:
             
         if not self.flow.context:
             self.flow.context = Context()
+            self.flow.context.__reset__(self.flow.session_context)
         
         if callable(self.when):
             result = self.when(self.flow.context)
